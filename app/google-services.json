@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "715302452017",
+    "firebase_url": "https://gps-messaging-app.firebaseio.com",
+    "project_id": "gps-messaging-app",
+    "storage_bucket": "gps-messaging-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715302452017:android:3775fb0b484c1fcf",
+        "android_client_info": {
+          "package_name": "com.example.martin.gps_basedchatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715302452017-3s4crefmcdsnhvosqttl7ia1vbb04mhu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqJNGKIZaqK8T_eHoVi-rLxhiCi4sq2Kk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
