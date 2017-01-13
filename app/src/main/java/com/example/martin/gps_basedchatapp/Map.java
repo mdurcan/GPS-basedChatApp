@@ -8,17 +8,23 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class Map extends FragmentActivity implements OnMapReadyCallback {
+public class Map extends FragmentActivity  implements android.location.LocationListener, OnMapReadyCallback {
 
     private GoogleMap mMap;
 
@@ -35,7 +41,17 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         Criteria criteria = new Criteria();
         String provider = lm.getBestProvider(criteria, false);
 
+        try {
+            lm.requestLocationUpdates(provider, 10000, (float) 10, this);
+        }
+        catch (SecurityException e) {
+            Log.e("GPS", "exception occured " + e.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("GPS", "exception occured " + e.getMessage());
+        }
 
+        setUpMapIfNeeded();
     }
 
 
@@ -51,10 +67,70 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (mMap != null) {
+            setUpMap();
+        }
+    }
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+    }
+
+    private void setUpMapIfNeeded() {
+        if (mMap == null) {
+            ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        }
+    }
+
+    private void setUpMap() {
+        final DatabaseReference ref = mDatabase.child("locations").getRef();
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot locSnapshot: dataSnapshot.getChildren()) {
+                    LocationMessage loc = locSnapshot.getValue(LocationMessage.class);
+                    if (loc != null) {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(loc.latitude,loc.longitude))
+                                .title(loc.Message)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    }
+                }
+                ref.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void onLocationChanged(Location arg0) {
+        mMap.clear();
+        setUpMap();
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(arg0.getLatitude(),arg0.getLongitude()))
+                .title("Current location"));
+
+        CameraUpdate currentlocation= CameraUpdateFactory.newLatLng(new LatLng(arg0.getLatitude(),arg0.getLongitude()));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+        mMap.moveCamera(currentlocation);
+        mMap.animateCamera(zoom);
+    }
+
+    public void onProviderDisabled(String arg0) {
+        Log.e("GPS", "provider disabled " + arg0);
+    }
+
+    public void onProviderEnabled(String arg0) {
+        Log.e("GPS", "provider enabled " + arg0);
+    }
+
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+        Log.e("GPS", "status changed to " + arg0 + " [" + arg1 + "]");
     }
 }
