@@ -1,5 +1,6 @@
 package com.example.martin.gps_basedchatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,14 +19,7 @@ public class Main extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
     }
 
     @Override
@@ -48,5 +42,20 @@ public class Main extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void newmessagescreen(View view){
+        Intent intent = new Intent(Main.this, NewMessage.class);
+        Main.this.startActivity(intent);
+    }
+
+    public void mapscreen(View view){
+        Intent intent = new Intent(Main.this, Map.class);
+        Main.this.startActivity(intent);
+    }
+
+    public void messagesscreen(View view){
+        Intent intent = new Intent(Main.this, Messages.class);
+        Main.this.startActivity(intent);
     }
 }

@@ -14,18 +14,39 @@
     tools:showIn="@layout/main_screen"
     tools:context="com.example.martin.gps_basedchatapp.Main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/textView" />
-
     <Button
-        android:text="Button"
+        android:text="@string/new_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="83dp"
-        android:id="@+id/button" />
+        android:id="@+id/newmessagescreen_button"
+        tools:ignore="UnknownId"
+        android:onClick="newmessagescreen" />
+
+    <Button
+        android:text="@string/map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Mapscreen_button"
+        android:onClick="mapscreen"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/newmessagescreen_button"
+        android:layout_alignStart="@+id/newmessagescreen_button"
+        android:layout_alignRight="@+id/newmessagescreen_button"
+        android:layout_alignEnd="@+id/newmessagescreen_button" />
+
+    <Button
+        android:text="@string/messages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/messagesscreen_button"
+        android:onClick="messagesscreen"
+        android:layout_marginBottom="69dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/Mapscreen_button"
+        android:layout_alignStart="@+id/Mapscreen_button"
+        android:layout_alignRight="@+id/Mapscreen_button"
+        android:layout_alignEnd="@+id/Mapscreen_button" />
 </RelativeLayout>

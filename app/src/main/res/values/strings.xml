@@ -6,4 +6,7 @@
     <string name="submit">Submit</string>
     <string name="type_here">type here</string>
     <string name="title_activity_map">Map</string>
+    <string name="map">Map</string>
+    <string name="messages">Messages</string>
+    <string name="new_message">new message</string>
 </resources>

@@ -43,7 +43,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/Back_button"
-        android:layout_width="230dp" />
+        android:layout_width="230dp"
+        android:onClick="mainscreen" />
 
     <ProgressBar
         style="?android:attr/progressBarStyle"
