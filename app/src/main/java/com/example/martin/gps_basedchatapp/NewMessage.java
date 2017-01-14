@@ -12,8 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class NewMessage extends AppCompatActivity {
 
@@ -21,6 +27,9 @@ public class NewMessage extends AppCompatActivity {
     Button Submit;
     private LocationManager lm;
     private LocationMessage message;
+    private Location location;
+    private DatabaseReference mDatabase;
+    Boolean newlocation = Boolean.TRUE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +40,6 @@ public class NewMessage extends AppCompatActivity {
         Criteria criteria = new Criteria();
         String provider = lm.getBestProvider(criteria, false);
 
-        Location location = null;
         messagetext = (EditText) findViewById(R.id.message_text);
         Submit = (Button) findViewById(R.id.Submit_button);
 
@@ -46,20 +54,66 @@ public class NewMessage extends AppCompatActivity {
         }
 
         if(location != null && messagetext.getText() != null){
-            message = new LocationMessage(location.getLatitude(),location.getLongitude(), messagetext.getText().toString());
+            message = new LocationMessage(location.getLatitude(),location.getLongitude(), NewMessage.this.messagetext.getText().toString());
             Submit.setVisibility(View.VISIBLE);
+
         }
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String  input = messagetext.getText().toString();
+                message = new LocationMessage(location.getLatitude(),location.getLongitude(), input);
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+                final DatabaseReference Ref = mDatabase.child("locations").push();
+                final DatabaseReference ref = mDatabase.child("locations").getRef();
+
+
+
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Boolean newlocation = true;
+
+                        for (DataSnapshot messagesSnapshot: dataSnapshot.getChildren()) {
+                            LocationMessage oldmessage = messagesSnapshot.getValue(LocationMessage.class);
+
+                            Location locationA = new Location("old message");
+                            locationA.setLatitude(oldmessage.latitude);
+                            locationA.setLongitude(oldmessage.longitude);
+
+                            float distance = location.distanceTo(locationA);
+
+                            if(distance <10){
+                                String editedmessage = oldmessage.Message+"; \n "+message.Message;
+                                oldmessage.Message=editedmessage;
+                                mDatabase.child("locations").child(messagesSnapshot.getKey()).setValue(oldmessage);
+                                newlocation = false;
+                            }
+
+                        }
+                        if(newlocation==true) {
+                            Ref.setValue(message);
+                        }
+                        ref.removeEventListener(this);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
+                    }
+                });
+
+
+
+                Intent intent = new Intent(NewMessage.this, Main.class);
+                NewMessage.this.startActivity(intent);
+            }
+        });
     }
 
 
-    private DatabaseReference mDatabase;
-    public void messagesubmit(View view){
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference Ref = mDatabase.child("locations").push();
-
-        Ref.setValue(message);
-    }
 
     public void mainscreen(View view){
         Intent intent = new Intent(NewMessage.this, Main.class);

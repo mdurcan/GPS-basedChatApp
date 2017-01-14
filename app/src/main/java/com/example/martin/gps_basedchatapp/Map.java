@@ -31,6 +31,7 @@ public class Map extends FragmentActivity  implements android.location.LocationL
     private LocationManager lm;
     private DatabaseReference mDatabase;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
